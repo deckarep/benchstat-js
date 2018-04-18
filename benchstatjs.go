@@ -8,15 +8,6 @@ import (
 	"golang.org/x/perf/benchstat"
 )
 
-// var (
-// 	flagDeltaTest = flag.String("delta-test", "utest", "significance `test` to apply to delta: utest, ttest, or none")
-// 	flagAlpha     = flag.Float64("alpha", 0.05, "consider change significant if p < `α`")
-// 	flagGeomean   = flag.Bool("geomean", false, "print the geometric mean of each file")
-// 	flagHTML      = flag.Bool("html", false, "print results as an HTML table")
-// 	flagSplit     = flag.String("split", "pkg,goos,goarch", "split benchmarks by `labels`")
-// 	flagSort      = flag.String("sort", "none", "sort by `order`: [-]delta, [-]name, none")
-// )
-
 var deltaTestNames = map[string]benchstat.DeltaTest{
 	"none":   benchstat.NoDeltaTest,
 	"u":      benchstat.UTest,
@@ -40,12 +31,14 @@ var DefaultSettings = &Settings{
 	Split:     "pkg,goos,goarch",
 }
 
+// NewSettings creates a new setting from default.
 func NewSettings() *Settings {
 	// Structwise copy of the settings
 	settings := *DefaultSettings
 	return &settings
 }
 
+// Settings are the possible settings to tweak the output of benchstatjs.
 type Settings struct {
 	DeltaTest string
 	Alpha     float64
@@ -55,7 +48,7 @@ type Settings struct {
 	Sort      string
 }
 
-// Process executes a benchstat with settings and 1 or more benchmark text blobs.
+// Process executes a benchstat with settings against one or more input blobs.
 func Process(settings *Settings, blobs ...[]byte) ([]byte, error) {
 	deltaTest := deltaTestNames[strings.ToLower(settings.DeltaTest)]
 	sortName := settings.Sort
@@ -65,10 +58,6 @@ func Process(settings *Settings, blobs ...[]byte) ([]byte, error) {
 		sortName = sortName[1:]
 	}
 	order, ok := sortNames[sortName]
-
-	// if flag.NArg() < 1 || deltaTest == nil || !ok {
-	// 	flag.Usage()
-	// }
 
 	if deltaTest == nil || !ok {
 		return nil, fmt.Errorf("Failed to init with proper settings")
