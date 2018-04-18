@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	benchstatjs "github.com/deckarep/benchstat-js"
+	benchstatjs "github.com/deckarep/benchstatjs"
+	"github.com/gopherjs/gopherjs/js"
 )
 
 var (
@@ -33,14 +34,45 @@ BenchmarkJSONEncode  	  50	  31765634 ns/op	  61.09 MB/s
 	`)
 )
 
-func main() {
+// Usage in JS:
+// var s = benchstatjs.Settings()
+// var result = benchstatjs.Process(s, "string with benchmark data");
+// console.log(result);
 
-	settings := benchstatjs.NewSettings()
-	settings.HTML = true
-	result, err := benchstatjs.Process(settings, a, b)
+func main() {
+	js.Global.Set("benchstatjs", map[string]interface{}{
+		"Settings": settingsShim,
+		"Process":  processShim,
+	})
+}
+
+func settingsShim() *js.Object {
+	ds := *benchstatjs.DefaultSettings
+	return js.MakeWrapper(&ds)
+}
+
+func processShim(settings *benchstatjs.Settings, doc string) string {
+	fmt.Println("I am doing some processing")
+	fmt.Println(settings.Alpha)
+	fmt.Println(settings.Geomean)
+	fmt.Println(settings.Split)
+
+	result, err := benchstatjs.Process(settings, []byte(doc))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error oh nooooo")
 	}
 
 	fmt.Println(string(result))
+	return string(result)
 }
+
+// func main() {
+// 	settings := benchstatjs.NewSettings()
+// 	settings.HTML = true
+// 	result, err := benchstatjs.Process(settings, a, b)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	fmt.Println(string(result))
+// }
