@@ -55,7 +55,7 @@ table {
 
 th {
 	padding: 15px;
-	background: #375EAB;
+	background: #f5871f;
 	text-align: center;
 	color: #FFF;
 	font-size: 20px;
@@ -88,12 +88,12 @@ td {
 }
 
 #input {
-	background: #ECF2F5;
+	background: #eae6d6;
 	border-right: 2px solid #AAA;
 }
 
 #output {
-	background: #E0EBF5;
+	background: #f9efcc;
 }
 
 footer {
